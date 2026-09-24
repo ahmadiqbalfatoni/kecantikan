@@ -17,20 +17,41 @@
 
 import app from "./app.js";
 
-const port = process.env.PORT || process.env.APP_PORT || 8010;
+const configuredPorts = [
+  process.env.PORT,
+  process.env.APP_PORT,
+  3000,
+  8000,
+  8010
+].map(p => Number(p)).filter(p => !isNaN(p) && p > 0);
 
-app
-  .listen(port, "0.0.0.0", () => {
-    console.log(`Server running on port ${port} (0.0.0.0)`);
-    import("./core/init_db.js")
-      .then(({ checkAndInitDatabase }) => checkAndInitDatabase())
-      .catch((err) => console.error("Auto DB Init Error:", err.message));
-  })
-  .on("error", (err) => {
-    if (err.code === "EADDRINUSE") {
-      console.error(`❌ Port ${port} is already in use`);
-      process.exit(1);
-    } else {
-      throw err;
-    }
-  });
+const uniquePorts = [...new Set(configuredPorts)];
+
+console.log(`[Server] Starting Express servers on ports:`, uniquePorts);
+
+let dbInitTriggered = false;
+
+for (const port of uniquePorts) {
+  try {
+    const server = app.listen(port, "0.0.0.0", () => {
+      console.log(`✅ Server running on port ${port} (0.0.0.0)`);
+      if (!dbInitTriggered) {
+        dbInitTriggered = true;
+        import("./core/init_db.js")
+          .then(({ checkAndInitDatabase }) => checkAndInitDatabase())
+          .catch((err) => console.error("Auto DB Init Error:", err.message));
+      }
+    });
+
+    server.on("error", (err) => {
+      if (err.code === "EADDRINUSE") {
+        console.warn(`⚠️ Port ${port} is already in use, skipping`);
+      } else {
+        console.error(`❌ Port ${port} error:`, err.message);
+      }
+    });
+  } catch (err) {
+    console.warn(`⚠️ Could not listen on port ${port}:`, err.message);
+  }
+}
+
