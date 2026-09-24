@@ -1,0 +1,13 @@
+{
+  "$schema": "https://schema.railpack.com",
+  "steps": {
+    "build": {
+      "commands": [
+        "echo 'No build step required'"
+      ]
+    }
+  },
+  "deploy": {
+    "startCommand": "node server.js"
+  }
+}

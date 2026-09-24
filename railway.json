@@ -1,0 +1,9 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "buildCommand": "echo 'No build required'"
+  },
+  "deploy": {
+    "startCommand": "node express_standart_be/server.js"
+  }
+}
