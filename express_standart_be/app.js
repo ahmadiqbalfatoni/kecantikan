@@ -102,6 +102,7 @@ app.get("/db-test", async (req, res) => {
   }
 
   const passwords = [
+    "lxbghIiorDJGDdwrbXXioKBtMyxtw1VY",
     urlPass,
     process.env.MYSQL_ROOT_PASSWORD,
     process.env.MYSQLPASSWORD,

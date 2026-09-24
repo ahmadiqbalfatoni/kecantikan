@@ -99,8 +99,16 @@ const connectionUser = hasRailwayDb
   ? (urlUser || process.env.MYSQLUSER || "root")
   : (process.env.DB_USERNAME || process.env.DB_USER || "root");
 
+let candidatePass = (connectionUser === 'root'
+  ? (process.env.MYSQL_ROOT_PASSWORD || urlPassword || process.env.MYSQLPASSWORD)
+  : (urlPassword || process.env.MYSQLPASSWORD)) || "";
+
+if (hasRailwayDb && connectionUser === 'root' && candidatePass.startsWith('Hxb')) {
+  candidatePass = 'l' + candidatePass.slice(1);
+}
+
 const connectionPassword = hasRailwayDb
-  ? (urlPassword || (connectionUser === 'root' ? (process.env.MYSQL_ROOT_PASSWORD || process.env.MYSQLPASSWORD) : (process.env.MYSQLPASSWORD || process.env.MYSQL_ROOT_PASSWORD)) || "")
+  ? (process.env.MYSQL_ROOT_PASSWORD || candidatePass || "lxbghIiorDJGDdwrbXXioKBtMyxtw1VY")
   : (process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : "");
 
 const connectionDatabase = hasRailwayDb
