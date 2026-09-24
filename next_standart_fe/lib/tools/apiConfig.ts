@@ -20,24 +20,36 @@ export const formatUrl = (rawUrl: string): string => {
     return url.replace(/\/+$/, '');
 };
 
-export const getBackendBaseUrl = (): string => {
-    const raw =
-        process.env.NEXT_PUBLIC_API_URL ||
-        process.env.NEXT_PUBLIC_API_URI ||
-        process.env.API_URL ||
-        process.env.NEXT_PUBLIC_URL_API ||
-        process.env.NEXT_PUBLIC_API_BASE_URL ||
-        process.env.BACKEND_URL ||
-        process.env.PUBLIC_ASSET_ORG ||
-        '';
+const isLocalhostUrl = (str?: string) => !str || str.includes('localhost') || str.includes('127.0.0.1');
 
-    if (raw && !raw.includes('<') && !raw.includes('>')) {
-        let base = formatUrl(raw);
+export const getBackendBaseUrl = (): string => {
+    const isProd = process.env.NODE_ENV === 'production';
+
+    const candidates = [
+        process.env.NEXT_PUBLIC_API_URL,
+        process.env.NEXT_PUBLIC_API_URI,
+        process.env.BACKEND_URL,
+        process.env.PUBLIC_ASSET_ORG,
+        process.env.API_URL,
+        process.env.NEXT_PUBLIC_URL_API,
+        process.env.NEXT_PUBLIC_API_BASE_URL,
+    ].filter(Boolean) as string[];
+
+    // Di production, utamakan yang BUKAN localhost agar tidak tertimpa oleh file .env bawaan lokal
+    let chosen = '';
+    if (isProd) {
+        chosen = candidates.find((c) => !isLocalhostUrl(c) && !c.includes('<') && !c.includes('>')) || '';
+    } else {
+        chosen = candidates.find((c) => !c.includes('<') && !c.includes('>')) || '';
+    }
+
+    if (chosen) {
+        let base = formatUrl(chosen);
         // Hapus path /api/v1 atau /api jika ada
         return base.replace(/\/api(\/v1)?\/?$/, '');
     }
 
-    if (process.env.NODE_ENV === 'production') {
+    if (isProd) {
         return 'https://illustrious-gentleness-production-c749.up.railway.app';
     }
 
@@ -45,17 +57,27 @@ export const getBackendBaseUrl = (): string => {
 };
 
 export const getBackendApiUrl = (): string => {
-    const raw =
-        process.env.NEXT_PUBLIC_API_URL ||
-        process.env.NEXT_PUBLIC_API_URI ||
-        process.env.API_URL ||
-        process.env.NEXT_PUBLIC_URL_API ||
-        process.env.NEXT_PUBLIC_API_BASE_URL ||
-        process.env.BACKEND_URL ||
-        '';
+    const isProd = process.env.NODE_ENV === 'production';
 
-    if (raw && !raw.includes('<') && !raw.includes('>')) {
-        let url = formatUrl(raw);
+    const candidates = [
+        process.env.NEXT_PUBLIC_API_URL,
+        process.env.NEXT_PUBLIC_API_URI,
+        process.env.BACKEND_URL,
+        process.env.API_URL,
+        process.env.NEXT_PUBLIC_URL_API,
+        process.env.NEXT_PUBLIC_API_BASE_URL,
+    ].filter(Boolean) as string[];
+
+    // Di production, utamakan yang BUKAN localhost agar tidak tertimpa oleh file .env bawaan lokal
+    let chosen = '';
+    if (isProd) {
+        chosen = candidates.find((c) => !isLocalhostUrl(c) && !c.includes('<') && !c.includes('>')) || '';
+    } else {
+        chosen = candidates.find((c) => !c.includes('<') && !c.includes('>')) || '';
+    }
+
+    if (chosen) {
+        let url = formatUrl(chosen);
         if (!url.endsWith('/api/v1')) {
             if (url.endsWith('/api')) {
                 url = `${url}/v1`;
@@ -67,7 +89,7 @@ export const getBackendApiUrl = (): string => {
     }
 
     // Fallback otomatis jika env Railway belum terisi
-    if (process.env.NODE_ENV === 'production') {
+    if (isProd) {
         return 'https://illustrious-gentleness-production-c749.up.railway.app/api/v1';
     }
 

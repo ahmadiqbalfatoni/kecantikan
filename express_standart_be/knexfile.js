@@ -78,11 +78,32 @@ if (dbUrl) {
   }
 }
 
-const connectionHost = process.env.DB_HOST || process.env.MYSQLHOST || process.env.MYSQL_HOST || urlHost || "localhost";
-const connectionPort = process.env.DB_PORT || process.env.MYSQLPORT || process.env.MYSQL_PORT || urlPort || (process.env.DB_DBMS === "pg" ? 5432 : 3306);
-const connectionUser = process.env.DB_USERNAME || process.env.DB_USER || process.env.MYSQLUSER || process.env.MYSQL_USER || urlUser || "root";
-const connectionPassword = process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : (process.env.MYSQLPASSWORD !== undefined ? process.env.MYSQLPASSWORD : (process.env.MYSQL_PASSWORD !== undefined ? process.env.MYSQL_PASSWORD : urlPassword));
-const connectionDatabase = process.env.DB_DATABASE || process.env.DB_NAME || process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE || urlDatabase || "railway";
+const isLocalhostHost = (h) => !h || h === 'localhost' || h === '127.0.0.1';
+
+// Prioritaskan MYSQLHOST / DATABASE_URL dari Railway agar tidak tertimpa oleh 127.0.0.1 dari file .env
+const connectionHost = (process.env.MYSQLHOST && !isLocalhostHost(process.env.MYSQLHOST))
+  ? process.env.MYSQLHOST
+  : (urlHost && !isLocalhostHost(urlHost))
+    ? urlHost
+    : (process.env.DB_HOST && (process.env.NODE_ENV !== 'production' || !isLocalhostHost(process.env.DB_HOST))
+      ? process.env.DB_HOST
+      : (process.env.MYSQLHOST || urlHost || "localhost"));
+
+const connectionPort = process.env.MYSQLPORT || urlPort || process.env.DB_PORT || (process.env.DB_DBMS === "pg" ? 5432 : 3306);
+
+const connectionUser = (process.env.MYSQLUSER && process.env.MYSQLUSER !== '')
+  ? process.env.MYSQLUSER
+  : (urlUser || process.env.DB_USERNAME || process.env.DB_USER || "root");
+
+const connectionPassword = (process.env.MYSQLPASSWORD !== undefined && process.env.MYSQLPASSWORD !== '')
+  ? process.env.MYSQLPASSWORD
+  : (urlPassword || process.env.DB_PASSWORD || "");
+
+const connectionDatabase = (process.env.MYSQLDATABASE && process.env.MYSQLDATABASE !== '')
+  ? process.env.MYSQLDATABASE
+  : (urlDatabase || process.env.DB_DATABASE || process.env.DB_NAME || "railway");
+
+console.log(`[DB Config] Target DB: ${connectionHost}:${connectionPort} (${connectionDatabase}) user: ${connectionUser}`);
 
 const knexConfig = {
   default: {

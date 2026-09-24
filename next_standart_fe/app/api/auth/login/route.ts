@@ -120,12 +120,14 @@ export const POST = async (req: NextRequest) => {
 
     } catch (error: any) {
         let errorMessage = 'Login gagal';
-        // console.log(error)
+        const apiUrl = getBackendApiUrl();
 
         if (axios.isAxiosError(error)) {
             errorMessage = error.response?.data?.message || error.message || 'Login gagal';
+            console.error(`[Login API Route] Error connecting to backend (${apiUrl}):`, errorMessage, error.response?.status);
         } else if (error instanceof Error) {
             errorMessage = error.message;
+            console.error(`[Login API Route] Error:`, errorMessage);
         }
 
         const isConnectionRefused = /ECONNREFUSED/.test(errorMessage);
