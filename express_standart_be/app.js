@@ -84,6 +84,78 @@ app.get("/health", (req, res) => {
   return res.status(200).send("OK");
 });
 
+import mysql from "mysql2/promise";
+
+app.get("/db-test", async (req, res) => {
+  const host = process.env.MYSQLHOST || "mysql.railway.internal";
+  const port = Number(process.env.MYSQLPORT || 3306);
+  const database = process.env.MYSQLDATABASE || "railway";
+
+  let urlPass = '';
+  let urlUser = '';
+  if (process.env.DATABASE_URL) {
+    try {
+      const p = new URL(process.env.DATABASE_URL);
+      urlPass = decodeURIComponent(p.password);
+      urlUser = decodeURIComponent(p.username);
+    } catch (e) {}
+  }
+
+  const passwords = [
+    urlPass,
+    process.env.MYSQL_ROOT_PASSWORD,
+    process.env.MYSQLPASSWORD,
+    process.env.DB_PASSWORD,
+  ].filter(Boolean);
+
+  const users = [
+    urlUser,
+    process.env.MYSQLUSER,
+    "root",
+    "railway",
+  ].filter(Boolean);
+
+  const attempts = [];
+  let successConfig = null;
+
+  for (const u of [...new Set(users)]) {
+    for (const p of [...new Set(passwords)]) {
+      try {
+        const conn = await mysql.createConnection({
+          host,
+          port,
+          user: u,
+          password: p,
+          database,
+          connectTimeout: 5000,
+        });
+        await conn.query("SELECT 1");
+        await conn.end();
+        successConfig = { user: u, passPreview: p.slice(0, 3) + '...', host, database };
+        attempts.push({ user: u, passPreview: p.slice(0, 3) + '...', status: "SUCCESS" });
+        break;
+      } catch (err) {
+        attempts.push({ user: u, passPreview: p.slice(0, 3) + '...', error: err.message });
+      }
+    }
+    if (successConfig) break;
+  }
+
+  return res.json({
+    status: successConfig ? "connected" : "failed",
+    successConfig,
+    attempts,
+    envKeysPresent: {
+      hasDATABASE_URL: Boolean(process.env.DATABASE_URL),
+      hasMYSQLHOST: Boolean(process.env.MYSQLHOST),
+      hasMYSQLUSER: Boolean(process.env.MYSQLUSER),
+      hasMYSQLPASSWORD: Boolean(process.env.MYSQLPASSWORD),
+      hasMYSQL_ROOT_PASSWORD: Boolean(process.env.MYSQL_ROOT_PASSWORD),
+      hasMYSQLDATABASE: Boolean(process.env.MYSQLDATABASE),
+    }
+  });
+});
+
 app.get("/init-db", async (req, res) => {
   const force = req.query.force === "true";
   const result = await checkAndInitDatabase(force);
