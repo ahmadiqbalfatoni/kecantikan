@@ -10,6 +10,8 @@ import { signOut, useSession } from 'next-auth/react';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { formatDateSystem } from '@/lib/tools/dateTools';
 
+import logout from '@/lib/tools/serverTools';
+
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const { data: session } = useSession()
     const { layoutConfig, layoutState, onMenuToggle, showProfileSidebar } = useContext(LayoutContext);
@@ -26,9 +28,15 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
         return () => clearInterval(timer);
     }, []);
 
-    const handleLogout = () => {
-        signOut()
-    }
+    const handleLogout = async () => {
+        try {
+            await logout(null, true);
+        } catch (e) {
+            console.error('Logout error:', e);
+            const base = typeof window !== 'undefined' ? window.location.origin : '';
+            await signOut({ callbackUrl: `${base}/auth/login` });
+        }
+    };
 
     return (
         <div className="layout-topbar">

@@ -46,7 +46,8 @@ router.post("/", async (req, res) => {
                 oFormatted[row.kode] = row.keterangan || "";
 
                 if (row.kode == "msLogoPerusahaan" && row.keterangan) {
-                    oFormatted['msLogoPerusahaan'] = `${process.env.ASSETS_PATH}/uploads/config/logo_perusahaan/${row.keterangan}`
+                    const baseAssets = (process.env.ASSETS_PATH || '/api/assets').replace(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/, '') || '/api/assets';
+                    oFormatted['msLogoPerusahaan'] = `${baseAssets}/uploads/config/logo_perusahaan/${row.keterangan}`
                 }
             });
         }

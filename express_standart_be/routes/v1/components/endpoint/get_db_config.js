@@ -80,7 +80,8 @@ router.post("/", async (req, res) => {
     const oData = await getDBConfig(oPayload.kode);
 
     if (oData['msLogoPerusahaan']) {
-      oData['msLogoPerusahaan'] = `${process.env.ASSETS_PATH}/uploads/config/logo_perusahaan/${oData['msLogoPerusahaan']}`
+      const baseAssets = (process.env.ASSETS_PATH || '/api/assets').replace(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/, '') || '/api/assets';
+      oData['msLogoPerusahaan'] = `${baseAssets}/uploads/config/logo_perusahaan/${oData['msLogoPerusahaan']}`;
     }
 
     return res.status(200).json({

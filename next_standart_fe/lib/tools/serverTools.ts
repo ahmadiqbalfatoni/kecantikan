@@ -48,10 +48,17 @@ const logout = async (
     if (typeof window !== "undefined") {
         if (redirectToLogin) {
             const base = window.location.origin;
-            await signOut({ callbackUrl: `${base}/auth/login` });
+            setTimeout(() => { isLoggingOut = false; }, 2000);
+            try {
+                await signOut({ callbackUrl: `${base}/auth/login` });
+            } catch (e) {
+                console.error("SignOut error:", e);
+            }
+            window.location.href = `${base}/auth/login`;
         }
         return;
     }
+    setTimeout(() => { isLoggingOut = false; }, 2000);
     return;
 };
 

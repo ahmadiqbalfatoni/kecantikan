@@ -51,6 +51,16 @@ const authOptions: NextAuthConfig = {
         maxAge: 7 * 24 * 60 * 60,
     },
     callbacks: {
+        async redirect({ url, baseUrl }) {
+            if (url.includes('localhost') || url.includes('127.0.0.1')) {
+                return `${baseUrl}/auth/login`;
+            }
+            if (url.startsWith('/')) return `${baseUrl}${url}`;
+            try {
+                if (new URL(url).origin === baseUrl) return url;
+            } catch (e) {}
+            return `${baseUrl}/auth/login`;
+        },
         async jwt({ token, user }: { token: JWT; user?: User; }) {
             // 1. Initial sign in (Pertama kali login)
             if (user) {
