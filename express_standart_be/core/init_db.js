@@ -72,6 +72,13 @@ export async function checkAndInitDatabase(force = false, maxRetries = 10, delay
 
       const sqlContent = fs.readFileSync(sqlFile, "utf8");
 
+      // Pastikan database menggunakan collation utf8mb4_unicode_ci
+      try {
+        await DB.raw("ALTER DATABASE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+      } catch (e) {
+        // Abaikan jika user tidak memiliki hak ALTER DATABASE
+      }
+
       // Execute SQL script
       await DB.raw(sqlContent);
       console.log("✅ Database initialized successfully from db_klinik_kecantikan.sql!");

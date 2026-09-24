@@ -96,11 +96,11 @@ const connectionPort = hasRailwayDb
   : (process.env.DB_PORT || (process.env.DB_DBMS === "pg" ? 5432 : 3306));
 
 const connectionUser = hasRailwayDb
-  ? (process.env.MYSQLUSER || urlUser || "root")
+  ? (urlUser || process.env.MYSQLUSER || "root")
   : (process.env.DB_USERNAME || process.env.DB_USER || "root");
 
 const connectionPassword = hasRailwayDb
-  ? ((process.env.MYSQLPASSWORD !== undefined && process.env.MYSQLPASSWORD !== '') ? process.env.MYSQLPASSWORD : (urlPassword || ""))
+  ? (urlPassword || (connectionUser === 'root' ? (process.env.MYSQL_ROOT_PASSWORD || process.env.MYSQLPASSWORD) : (process.env.MYSQLPASSWORD || process.env.MYSQL_ROOT_PASSWORD)) || "")
   : (process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : "");
 
 const connectionDatabase = hasRailwayDb
@@ -127,13 +127,15 @@ const knexConfig = {
       idleTimeoutMillis: 30000,
 
       afterCreate: function (conn, done) {
-        const dbms = process.env.DB_DBMS;
+        const dbms = process.env.DB_DBMS || "mysql2";
         if (dbms === "pg" || dbms === "postgresql") {
           conn.query(`SET TIME ZONE '${TARGET_TZ}';`, function (err) {
             done(err, conn);
           });
         } else {
-          done(null, conn);
+          conn.query(`SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci; SET time_zone = '${MYSQL_TZ}';`, function (err) {
+            done(err, conn);
+          });
         }
       }
     }
