@@ -1,0 +1,47 @@
+.layout-config-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    width: 2.75rem;
+    height: 2.75rem;
+    background: var(--primary-color);
+    color: var(--primary-color-text);
+    bottom: 2rem;
+    right: 2rem;
+    border-radius: 50%;
+    transition: background-color var(--transition-duration), transform 0.2s;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: 0 4px 14px rgba(0,0,0,.15);
+    border: none;
+
+    &.config-link {
+        font-size: 1rem;
+        font-family: inherit;
+    }
+    .config-link:focus {
+        outline: 0 none;
+        box-shadow: 0 0 0 2px var(--focus-ring);
+    }
+
+    i {
+        font-size: 1.25rem;
+        transform: rotate(0deg);
+        transition: transform 1s;
+    }
+
+    &:hover {
+        background: var(--primary-600, #059669);
+        transform: scale(1.08);
+    }
+}
+
+.layout-config-sidebar {
+    &.p-sidebar {
+        .p-sidebar-content {
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+    }
+} 

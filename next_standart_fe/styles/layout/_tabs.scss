@@ -1,0 +1,155 @@
+// --- VARIABEL KONFIGURASI TAMPILAN BROWSER TAB (DIPERBARUI) ---
+$browser-tab-bar-bg: #f1f3f4;          // Abu-abu sangat muda khas Chrome Klasik
+$browser-tab-active-bg: #ffffff;       // Warna background tab aktif & panel konten
+$browser-tab-text-active: #1f1f1f;     // Warna teks tab aktif (Hampir Hitam)
+$browser-tab-text-inactive: #474747;   // Warna teks tab tidak aktif
+$browser-tab-hover-bg: #e8eaed;        // Warna sorot hover abu-abu saat diarahkan kursor
+$browser-tab-radius: 12px;             // Kelengkungan sudut atas tab (8px - 16px)
+$browser-tab-curve-size: 12px;         // Ukuran lengkungan keluar bawah (outward curve)
+$browser-tab-gap: 6px;                 // Jarak konstan antar-tab (aktif maupun tidak aktif tetap sama rata)
+
+// --- CLASS UTAMA BROWSER STYLE TABS ---
+.browser-style-tabs {
+    
+    // 1. Bilah Jalur Tab (Tab Strip)
+    .p-tabview-nav {
+        background: $browser-tab-bar-bg !important;
+        padding-top: 10px !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+        border-bottom: none !important;
+        display: flex !important;
+        align-items: flex-end !important;
+        gap: 0px !important;
+        border-top-left-radius: $browser-tab-radius;
+        border-top-right-radius: $browser-tab-radius;
+        position: relative;
+        overflow: visible !important;
+
+        // Aturan untuk masing-masing item tab list
+        li {
+            position: relative;
+            background: transparent !important;
+            border: none !important;
+            
+            // FORMULA SIMETRIS: Membagi rata jarak ke kanan dan kiri untuk SEMUA jenis tab
+            margin-left: calc(#{$browser-tab-gap} / 2) !important;
+            margin-right: calc(#{$browser-tab-gap} / 2) !important;
+
+            // Keadaan: TAB TIDAK AKTIF (Melayang Dekat Dasar & Kapsul)
+            &:not(.p-highlight) {
+                margin-top: 6px !important;   // Menjaga kapsul tetap melayang di tengah
+                margin-bottom: 6px !important; // Menjaga kapsul tetap melayang di tengah
+
+                .p-tabview-nav-link {
+                    background: $browser-tab-hover-bg !important; // Menggunakan hover-bg agar bentuk kapsul abu-abunya terlihat jelas sesuai gambar
+                    color: $browser-tab-text-inactive !important;
+                    border-radius: $browser-tab-radius !important;
+                    margin-bottom: 0px !important;
+                    height: 32px !important; // Lebih pendek agar proporsi kapsul melayang terlihat sempurna
+                    padding: 0 16px !important;
+
+                    &:hover {
+                        background: darken($browser-tab-hover-bg, 4%) !important; // Sorot abu-abu lebih pekat saat di-hover
+                        color: #000000 !important;
+                    }
+                }
+            }
+
+            // Keadaan: TAB AKTIF (Menyatu Putih & Lengkungan Keluar)
+            &.p-highlight {
+                z-index: 10;
+                // Margin kiri-kanan sudah teratur rapi & simetris mewarisi rumus default di atas
+
+                .p-tabview-nav-link {
+                    background: $browser-tab-active-bg !important;
+                    color: $browser-tab-text-active !important;
+                    border-top-left-radius: $browser-tab-radius !important;
+                    border-top-right-radius: $browser-tab-radius !important;
+                    border-bottom-left-radius: 0px !important;
+                    border-bottom-right-radius: 0px !important;
+                    margin-bottom: 0px !important;
+                    position: relative;
+                    height: 40px !important; // Tinggi penuh menyatu ke dasar
+                    padding: 0 20px !important;
+                }
+
+                // Trik Geometri: Lengkungan Keluar Sebelah Kiri
+                &::before {
+                    content: "";
+                    position: absolute;
+                    bottom: 0;
+                    left: -$browser-tab-curve-size;
+                    width: $browser-tab-curve-size;
+                    height: $browser-tab-curve-size;
+                    background: transparent;
+                    border-bottom-right-radius: $browser-tab-curve-size;
+                    box-shadow: 4px 4px 0 0 $browser-tab-active-bg;
+                    z-index: 12;
+                    pointer-events: none;
+                }
+
+                // Trik Geometri: Lengkungan Keluar Sebelah Kanan
+                &::after {
+                    content: "";
+                    position: absolute;
+                    bottom: 0;
+                    right: -$browser-tab-curve-size;
+                    width: $browser-tab-curve-size;
+                    height: $browser-tab-curve-size;
+                    background: transparent;
+                    border-bottom-left-radius: $browser-tab-curve-size;
+                    box-shadow: -4px 4px 0 0 $browser-tab-active-bg;
+                    z-index: 12;
+                    pointer-events: none;
+                }
+            }
+        }
+    }
+
+    // 2. Link Default Tab (Anchor)
+    .p-tabview-nav-link {
+        border: none !important;
+        font-weight: 600 !important;
+        font-size: 13px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        text-decoration: none !important;
+        box-shadow: none !important;
+        height: 36px !important;
+        padding: 0 20px !important;
+    }
+
+    // 3. Matikan Garis Highlight Penunjuk Bawaan PrimeReact
+    .p-tabview-ink-bar {
+        display: none !important;
+    }
+
+    // 4. Panel Kotak Konten Form di Bawah Tab
+    .p-tabview-panels {
+        border: none !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        background: $browser-tab-active-bg !important;
+        padding: 24px !important;
+        border-bottom-left-radius: $browser-tab-radius;
+        border-bottom-right-radius: $browser-tab-radius;
+
+        // --- ANIMASI FADE-IN HALUS SAAT KONTEN PANEL DI-RENDER ---
+        // .p-tabview-panel {
+        //     animation: tabBrowserFadeIn 0.22s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        // }
+    }
+}
+
+// --- CSS KEYFRAMES UNTUK TRANSISI ANIMASI PREMIUM ---
+@keyframes tabBrowserFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px); // Geser naik tipis (4px) agar transisi terasa hidup & organik
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

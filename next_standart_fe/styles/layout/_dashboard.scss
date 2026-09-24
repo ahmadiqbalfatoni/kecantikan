@@ -1,0 +1,314 @@
+/* =========================================================================
+   SISTEM KLINIK - DASHBOARD DESIGN TOKENS (PURE WHITE LUXURY AESTHETIC)
+   Background: #FFFFFF (Putih Solid)
+   Card/Panel: #FFFFFF dengan border #E5E7EB dan soft shadow
+   ========================================================================= */
+
+:root {
+  --clinic-paper: #FFFFFF;
+  --clinic-panel: #FFFFFF;
+  --clinic-panel-subtle: #F9FAFB;
+  --clinic-ink: #202A26;
+  --clinic-ink-title: #064a34;
+  --clinic-muted: #6F7A74;
+  --clinic-muted-2: #9AA39D;
+  
+  --clinic-emerald: var(--primary-color, #10b981);
+  --clinic-emerald-deep: var(--primary-600, #0e9d6e);
+  --clinic-emerald-soft: var(--primary-100, #c6eee1);
+  --clinic-emerald-soft-2: var(--primary-200, #98e1c9);
+  
+  --clinic-gold: #B3873F;
+  --clinic-gold-soft: #F1E3C8;
+  
+  --clinic-line: #E5E7EB;
+  --clinic-line-soft: #F3F4F6;
+}
+
+/* Base Dashboard Container: Pure White Solid */
+.clinic-dashboard {
+  background-color: #FFFFFF;
+  color: var(--clinic-ink);
+  font-family: var(--font-family, 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  min-height: 100vh;
+  zoom: 0.9;
+}
+
+/* Typography tokens - Harmonized with app standard font */
+.font-fraunces {
+  font-family: var(--font-family, 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+}
+
+.font-inter {
+  font-family: var(--font-family, 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Panel & Cards: Border 1px #E5E7EB + Soft Shadow (Kontras jelas di atas background putih) */
+.clinic-panel {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+/* Buttons (Border radius 8px) */
+.btn-primary-clinic {
+  background-color: var(--primary-color, #10b981);
+  color: #FFFFFF;
+  border-radius: 8px;
+  font-family: var(--font-family, 'Plus Jakarta Sans', 'Inter', sans-serif);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.25);
+}
+
+.btn-primary-clinic:hover {
+  background-color: var(--primary-600, #0e9d6e);
+}
+
+.btn-ghost-clinic {
+  background-color: #FFFFFF;
+  color: var(--clinic-ink);
+  border-radius: 8px;
+  font-family: var(--font-family, 'Plus Jakarta Sans', 'Inter', sans-serif);
+  font-weight: 500;
+  font-size: 13px;
+  padding: 8px 16px;
+  border: 1px solid #E5E7EB;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.btn-ghost-clinic:hover {
+  background-color: #F9FAFB;
+  border-color: #D1D5DB;
+}
+
+.btn-icon-clinic {
+  background-color: #FFFFFF;
+  color: var(--clinic-muted);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #E5E7EB;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.btn-icon-clinic:hover {
+  color: var(--clinic-ink);
+  background-color: #F9FAFB;
+  border-color: #D1D5DB;
+}
+
+/* Badge Pill Kategori A: Header Cards (Real-time, Top 5, 3 dokter terdaftar, 4 petugas terdaftar) */
+.clinic-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-family: var(--font-family, 'Plus Jakarta Sans', 'Inter', sans-serif);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.clinic-pill-emerald {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.clinic-pill-gold {
+  background-color: #F1E3C8;
+  color: #78531E;
+  border: 1px solid rgba(179, 135, 63, 0.2);
+}
+
+/* Badge Pill Kategori B: Jabatan Tabel (Dokter, Perawat, Terapis) */
+.clinic-pill-role {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.clinic-pill-role-dokter {
+  background-color: #ECFDF5;
+  color: #047857;
+  border: 1px solid #A7F3D0;
+}
+
+.clinic-pill-role-perawat {
+  background-color: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+}
+
+.clinic-pill-role-terapis {
+  background-color: #F5F3FF;
+  color: #6D28D9;
+  border: 1px solid #DDD6FE;
+}
+
+/* Avatar Initials Bulat */
+.clinic-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Card Header & Title Standardization */
+.clinic-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.clinic-card-title {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #154F3B;
+  line-height: 1.3;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Responsive Grid Layouts with consistent 24px gap */
+.clinic-two-col-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+
+  @media (min-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.clinic-top-card-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  background-color: #FFFFFF;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 300px 1fr;
+  }
+  @media (min-width: 1280px) {
+    grid-template-columns: 330px 1fr;
+  }
+}
+
+.clinic-hero-col {
+  border-bottom: 1px solid #E5E7EB;
+  
+  @media (min-width: 1024px) {
+    border-bottom: none;
+    border-right: 1px solid #E5E7EB;
+  }
+}
+
+.clinic-stat-strip-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  height: 100%;
+  background-color: #FFFFFF;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.clinic-stat-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 24px 18px;
+  border-bottom: 1px solid #E5E7EB;
+
+  @media (min-width: 640px) {
+    &:nth-child(odd) {
+      border-right: 1px solid #E5E7EB;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    border-bottom: none;
+    border-right: none;
+    border-left: 1px solid #E5E7EB;
+
+    &:first-child {
+      border-left: none;
+      padding-left: 24px;
+    }
+
+    &:last-child {
+      padding-right: 24px;
+    }
+  }
+}
+
+/* Table Row: Padding, rounded hover, dan divider rapi */
+.clinic-table-row {
+  min-height: 52px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #F1F5F9;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: #F8FAFC;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.clinic-table-row:hover {
+  background-color: #F9FAFB;
+}
+

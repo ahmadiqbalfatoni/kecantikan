@@ -1,0 +1,10 @@
+export const apiPasienCari = '/master/pendaftaran-pasien-cari';
+export const apiPasienCreate = '/master/pendaftaran-pasien-create';
+export const apiPasienDaftarUlang = '/master/pendaftaran-pasien-daftar-ulang';
+export const apiPasienData = '/master/pendaftaran-pasien-data';
+export const apiPasienUpdate = '/master/pendaftaran-pasien-update';
+export const apiPasienDelete = '/master/pendaftaran-pasien-delete';
+export const apiPasienBatal = '/master/pendaftaran-pasien-batal';
+export const apiPasienLayananOptions = '/master/pendaftaran-pasien-layanan-options';
+export const apiPasienAmbilAntrianLayanan = '/master/pendaftaran-pasien-ambil-antrian-layanan';
+export const apiPasienKepemilikanPaket = '/master/pendaftaran-pasien-kepemilikan-paket';

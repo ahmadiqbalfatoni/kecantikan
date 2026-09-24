@@ -1,0 +1,39 @@
+{
+    "compilerOptions": {
+        "target": "ES2017",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "jsx": "preserve",
+        "incremental": true,
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ],
+        "paths": {
+            "@/*": ["./*"]
+        }
+    },
+    "include": [
+        "**/*.ts",
+        "**/*.tsx",
+        "types/**/*.d.ts",
+        "types/**/*.ts",
+        ".next/types/**/*.ts",
+        "app/(full-page)/auth/login1/page.tsx",
+        "app/(full-page)/layout.tsx",
+        "app/layout.tsx",
+        "app/(full-page)/auth/error/page.tsx",
+        "app/(full-page)/auth/access/page.tsx",
+        "app/(full-page)/pages/notfound/page.tsx"
+    ],
+    "exclude": ["node_modules"]
+}

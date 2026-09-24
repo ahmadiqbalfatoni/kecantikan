@@ -1,0 +1,20 @@
+.my-password-input {
+    padding: 0.75rem; 
+    font-size: 1rem;
+    color: #334155;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+.my-password-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px #bfdbfe;
+}
+
+.my-password-unstyled {
+    position: relative;
+    width: 100%;
+}

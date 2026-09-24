@@ -1,0 +1,12 @@
+{
+  "name": "klinik-kecantikan-root",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node express_standart_be/server.js",
+    "start:be": "cd express_standart_be && npm start",
+    "start:fe": "cd next_standart_fe && npm start"
+  },
+  "dependencies": {
+    "lucide-react": "^1.43.0"
+  }
+}
