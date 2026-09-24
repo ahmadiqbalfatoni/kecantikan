@@ -20,6 +20,7 @@ import { JWT } from 'next-auth/jwt';
 import { refreshToken } from '@/lib/tools/serverTools'; // Pastikan path import ini benar
 
 const authOptions: NextAuthConfig = {
+    trustHost: true,
     providers: [
         CredentialsProvider({
             name: 'credentials',

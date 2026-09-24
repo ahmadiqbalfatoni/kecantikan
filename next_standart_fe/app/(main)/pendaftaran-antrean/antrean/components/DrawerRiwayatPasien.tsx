@@ -85,10 +85,13 @@ interface DrawerRiwayatPasienProps {
 const getFullImageUrl = (url?: string) => {
     if (!url) return '';
     if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+        if (url.includes('127.0.0.1:8000') || url.includes('localhost:8000')) {
+            return url.replace(/^http:\/\/(127\.0\.0\.1|localhost):8000/, '');
+        }
         return url;
     }
     const clean = url.startsWith('/') ? url : `/${url}`;
-    return `http://127.0.0.1:8000${clean}`;
+    return clean;
 };
 
 export const DrawerRiwayatPasien: React.FC<DrawerRiwayatPasienProps> = ({
@@ -1677,7 +1680,8 @@ export const DrawerRiwayatPasien: React.FC<DrawerRiwayatPasienProps> = ({
                             onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 if (previewPhotoUrl && !target.src.includes('/api/assets')) {
-                                    target.src = `/api/assets${previewPhotoUrl.replace('http://127.0.0.1:8000', '')}`;
+                                    const cleanUrl = previewPhotoUrl.replace(/^https?:\/\/[^/]+/, '');
+                                    target.src = `/api/assets${cleanUrl.startsWith('/') ? cleanUrl : '/' + cleanUrl}`;
                                 }
                             }}
                         />
