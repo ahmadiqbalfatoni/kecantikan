@@ -15,7 +15,7 @@
  */
 
 import axios from 'axios';
-import { logout } from '../tools/serverTools';
+import { handleClientLogout } from '../tools/clientAuth';
 import { signOut } from "next-auth/react";
 
 const Axios = axios.create({
@@ -53,7 +53,7 @@ async function postData(endpoint: string, data = {}, customHeader = {}) {
     } catch (error: any) {
         console.log(error);
         if (error?.response?.status == 401) {
-            logout(null, true);
+            handleClientLogout();
         }
         throw error;
     }

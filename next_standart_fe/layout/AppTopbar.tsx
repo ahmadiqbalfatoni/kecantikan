@@ -10,7 +10,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { formatDateSystem } from '@/lib/tools/dateTools';
 
-import logout from '@/lib/tools/serverTools';
+import { handleClientLogout } from '@/lib/tools/clientAuth';
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const { data: session } = useSession()
@@ -29,13 +29,10 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     }, []);
 
     const handleLogout = async () => {
-        try {
-            await logout(null, true);
-        } catch (e) {
-            console.error('Logout error:', e);
-            const base = typeof window !== 'undefined' ? window.location.origin : '';
-            await signOut({ callbackUrl: `${base}/auth/login` });
+        if (op.current) {
+            op.current.hide();
         }
+        await handleClientLogout();
     };
 
     return (
@@ -84,9 +81,14 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                         <span>Log Out</span>
                     </button>
                     <OverlayPanel ref={op}>
-                        <span className="p-link" onClick={() => handleLogout()}>
-                            Log out
-                        </span>
+                        <div
+                            className="p-link flex align-items-center gap-2 p-2 hover:surface-100 border-round cursor-pointer font-semibold"
+                            onClick={handleLogout}
+                            style={{ cursor: 'pointer', minWidth: '120px' }}
+                        >
+                            <i className="pi pi-sign-out text-red-500"></i>
+                            <span className="text-red-500">Log out</span>
+                        </div>
                     </OverlayPanel>
                 </div>
             </div>

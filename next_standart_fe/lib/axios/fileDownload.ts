@@ -16,7 +16,7 @@
 
 
 import axios from 'axios';
-import { logout } from '../tools/serverTools';
+import { handleClientLogout } from '../tools/clientAuth';
 import { signOut } from "next-auth/react";
 
 const Axios = axios.create({
@@ -78,7 +78,7 @@ async function fileDownload(endpoint: string, data = {}, customHeader = {}) {
             }
         }
         if (error?.response?.status == 401) {
-            logout(null, true);
+            handleClientLogout();
         }
         throw error;
     }
