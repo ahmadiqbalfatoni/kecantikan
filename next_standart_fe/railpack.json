@@ -3,11 +3,11 @@
   "steps": {
     "build": {
       "commands": [
-        "echo 'No build required'"
+        "npm run build"
       ]
     }
   },
   "deploy": {
-    "startCommand": "node express_standart_be/server.js"
+    "startCommand": "npm run start"
   }
 }
