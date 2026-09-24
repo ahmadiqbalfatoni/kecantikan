@@ -21,9 +21,10 @@ export const formatUrl = (rawUrl: string): string => {
 };
 
 const isLocalhostUrl = (str?: string) => !str || str.includes('localhost') || str.includes('127.0.0.1');
+const checkIsProd = () => process.env.NODE_ENV === 'production' || Boolean(process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PUBLIC_DOMAIN);
 
 export const getBackendBaseUrl = (): string => {
-    const isProd = process.env.NODE_ENV === 'production';
+    const isProd = checkIsProd();
 
     const candidates = [
         process.env.NEXT_PUBLIC_API_URL,
@@ -57,7 +58,7 @@ export const getBackendBaseUrl = (): string => {
 };
 
 export const getBackendApiUrl = (): string => {
-    const isProd = process.env.NODE_ENV === 'production';
+    const isProd = checkIsProd();
 
     const candidates = [
         process.env.NEXT_PUBLIC_API_URL,

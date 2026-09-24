@@ -80,30 +80,34 @@ if (dbUrl) {
 
 const isLocalhostHost = (h) => !h || h === 'localhost' || h === '127.0.0.1';
 
-// Prioritaskan MYSQLHOST / DATABASE_URL dari Railway agar tidak tertimpa oleh 127.0.0.1 dari file .env
-const connectionHost = (process.env.MYSQLHOST && !isLocalhostHost(process.env.MYSQLHOST))
-  ? process.env.MYSQLHOST
-  : (urlHost && !isLocalhostHost(urlHost))
-    ? urlHost
-    : (process.env.DB_HOST && (process.env.NODE_ENV !== 'production' || !isLocalhostHost(process.env.DB_HOST))
-      ? process.env.DB_HOST
-      : (process.env.MYSQLHOST || urlHost || "localhost"));
+// Jika ada Railway MySQL (MYSQLHOST / urlHost / DATABASE_URL), SELALU gunakan Railway MySQL!
+const hasRailwayDb = Boolean(
+  (process.env.MYSQLHOST && !isLocalhostHost(process.env.MYSQLHOST)) ||
+  (urlHost && !isLocalhostHost(urlHost)) ||
+  (process.env.DATABASE_URL && !isLocalhostHost(urlHost))
+);
 
-const connectionPort = process.env.MYSQLPORT || urlPort || process.env.DB_PORT || (process.env.DB_DBMS === "pg" ? 5432 : 3306);
+const connectionHost = hasRailwayDb
+  ? (process.env.MYSQLHOST || urlHost)
+  : (process.env.DB_HOST || "localhost");
 
-const connectionUser = (process.env.MYSQLUSER && process.env.MYSQLUSER !== '')
-  ? process.env.MYSQLUSER
-  : (urlUser || process.env.DB_USERNAME || process.env.DB_USER || "root");
+const connectionPort = hasRailwayDb
+  ? (process.env.MYSQLPORT || urlPort || 3306)
+  : (process.env.DB_PORT || (process.env.DB_DBMS === "pg" ? 5432 : 3306));
 
-const connectionPassword = (process.env.MYSQLPASSWORD !== undefined && process.env.MYSQLPASSWORD !== '')
-  ? process.env.MYSQLPASSWORD
-  : (urlPassword || process.env.DB_PASSWORD || "");
+const connectionUser = hasRailwayDb
+  ? (process.env.MYSQLUSER || urlUser || "root")
+  : (process.env.DB_USERNAME || process.env.DB_USER || "root");
 
-const connectionDatabase = (process.env.MYSQLDATABASE && process.env.MYSQLDATABASE !== '')
-  ? process.env.MYSQLDATABASE
-  : (urlDatabase || process.env.DB_DATABASE || process.env.DB_NAME || "railway");
+const connectionPassword = hasRailwayDb
+  ? ((process.env.MYSQLPASSWORD !== undefined && process.env.MYSQLPASSWORD !== '') ? process.env.MYSQLPASSWORD : (urlPassword || ""))
+  : (process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : "");
 
-console.log(`[DB Config] Target DB: ${connectionHost}:${connectionPort} (${connectionDatabase}) user: ${connectionUser}`);
+const connectionDatabase = hasRailwayDb
+  ? (process.env.MYSQLDATABASE || urlDatabase || "railway")
+  : (process.env.DB_DATABASE || process.env.DB_NAME || "db_klinik_kecantikan");
+
+console.log(`[DB Config] hasRailwayDb: ${hasRailwayDb}, Target DB: ${connectionHost}:${connectionPort} (${connectionDatabase}) user: ${connectionUser}`);
 
 const knexConfig = {
   default: {
