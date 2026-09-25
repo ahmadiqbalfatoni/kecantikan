@@ -53,6 +53,7 @@ router.post("/", async (req, res) => {
 
     // 2. Eksekusi 1 Transaksi DB Atomic
     await DB.transaction(async (trx) => {
+      const now = new Date();
       const timeInfo = getOperationalTimeInfo(oPayload.tz);
       const todayYmd = timeInfo.todayYmd;
       const todayStr = todayYmd.replace(/-/g, "");
