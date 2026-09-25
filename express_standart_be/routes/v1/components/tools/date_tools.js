@@ -55,16 +55,48 @@ export const formatDateSystem = (
         ? new Date(date)
         : date;
 
-    let tz = process.env.APP_TZ || "UTC";
+    let tz = (process.env.APP_TZ && process.env.APP_TZ !== "UTC") ? process.env.APP_TZ : "Asia/Jakarta";
 
     if (timeZoneKey) {
-        tz = timeZoneKey;
+        if (timeZoneMap[timeZoneKey]) {
+            tz = timeZoneMap[timeZoneKey];
+        } else {
+            tz = timeZoneKey;
+        }
     }
 
     if (isNaN(dateObj.getTime())) return null;
 
     return formatInTimeZone(dateObj, tz, formatStr);
-}
+};
+
+export const getOperationalTimeInfo = (tzParam) => {
+    let tz = tzParam || (process.env.APP_TZ && process.env.APP_TZ !== "UTC" ? process.env.APP_TZ : "Asia/Jakarta");
+    if (timeZoneMap[tz]) {
+        tz = timeZoneMap[tz];
+    }
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString("en-GB", {
+        timeZone: tz,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+    });
+    const [h, m, s] = timeStr.split(":").map(Number);
+    const nowMinutes = (isNaN(h) ? 0 : h) * 60 + (isNaN(m) ? 0 : m);
+    const todayYmd = now.toLocaleDateString("en-CA", { timeZone: tz });
+
+    return {
+        tz,
+        timeStr,
+        todayYmd,
+        nowMinutes,
+        hour: h,
+        minute: m,
+        second: s,
+    };
+};
 
 export function datetime() {
     const now = new Date();

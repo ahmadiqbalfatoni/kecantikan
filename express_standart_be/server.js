@@ -15,6 +15,9 @@
  */
 
 
+import "dotenv/config";
+process.env.TZ = (process.env.APP_TZ && process.env.APP_TZ !== "UTC") ? process.env.APP_TZ : "Asia/Jakarta";
+
 import app from "./app.js";
 
 const configuredPorts = [

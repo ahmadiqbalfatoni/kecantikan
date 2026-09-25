@@ -15,6 +15,7 @@ import { InputIcon } from 'primereact/inputicon';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { Dialog } from 'primereact/dialog';
 import postData from '@/lib/axios/postData';
+import { getTzUser } from '@/lib/tools/dateTools';
 import { showError, showSuccess, showWarning, showInfo } from '@/lib/tools/generalTools';
 import { DialogJadwalMingguanRuangan, RoomTabOption } from '../../booking/components/DialogJadwalMingguanRuangan';
 import { DialogSemuaBookingRuangan } from './DialogSemuaBookingRuangan';
@@ -749,11 +750,44 @@ export const FormPendaftaranKunjungan: React.FC<Props> = ({ toast, onSuccess }) 
         }
       }
 
+      // Sinkronkan status ketepatan jam shift dengan waktu lokal perangkat user hari ini
+      const isBookingToday = formatDateToYMD(tanggalKunjungan) === formatDateToYMD(new Date());
+      let slotPast = Boolean(pjSlot.is_past_today);
+      let slotNotStarted = Boolean(pjSlot.is_not_started_today);
+      let slotOngoing = Boolean(pjSlot.is_ongoing_now);
+
+      const jMulai = (pjSlot.jam_mulai || '').slice(0, 5);
+      const jSelesai = (pjSlot.jam_selesai || '').slice(0, 5);
+
+      if (isBookingToday && jMulai && jSelesai) {
+        const now = new Date();
+        const nowMins = now.getHours() * 60 + now.getMinutes();
+        const [sh, sm] = jMulai.split(':').map(Number);
+        const [eh, em] = jSelesai.split(':').map(Number);
+        const sMin = (isNaN(sh) ? 0 : sh) * 60 + (isNaN(sm) ? 0 : sm);
+        const eMin = (isNaN(eh) ? 0 : eh) * 60 + (isNaN(em) ? 0 : em);
+
+        slotPast = eMin <= nowMins;
+        slotNotStarted = nowMins < sMin;
+        slotOngoing = nowMins >= sMin && nowMins < eMin;
+      }
+
+      const totalK = parseInt(String(pjSlot.kuota_total || 0), 10);
+      const terisiK = parseInt(String(pjSlot.kuota_terisi || 0), 10);
+      const sisaK = pjSlot.sisa_kuota !== undefined ? pjSlot.sisa_kuota : Math.max(0, totalK - terisiK);
+      const isAvail = sisaK > 0 && !slotPast;
+
       result.push({
         ...pjSlot,
         has_pj: hasPJ,
         petugas_pendamping: cleanCompanions,
         jumlah_pendamping: cleanCompanions.length,
+        sisa_kuota: sisaK,
+        kuota_total: totalK,
+        is_past_today: slotPast,
+        is_not_started_today: slotNotStarted,
+        is_ongoing_now: slotOngoing,
+        is_available: isAvail,
       });
     }
 
@@ -783,6 +817,7 @@ export const FormPendaftaranKunjungan: React.FC<Props> = ({ toast, onSuccess }) 
         kode_ruangan: activeRuangan,
         kode_layanan: selectedList[0]?.kode_layanan,
         jenis_layanan: selectedList[0]?.jenis,
+        tz: getTzUser() || 'Asia/Jakarta',
       });
 
       if (res.data?.status === 200 || res.status === 200) {
@@ -930,6 +965,7 @@ export const FormPendaftaranKunjungan: React.FC<Props> = ({ toast, onSuccess }) 
         items: itemsPayload,
         kode_jadwal: selectedSlot.kode_jadwal,
         override_peringatan_booking: isOverride,
+        tz: getTzUser() || 'Asia/Jakarta',
       };
 
       const res = await postData('/master/pendaftaran-pasien-ambil-antrian-layanan', payload);

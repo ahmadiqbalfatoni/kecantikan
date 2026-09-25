@@ -10,7 +10,7 @@
 
 import express from "express";
 import DB from "../../../../core/config/knex.js";
-import { formatDateSystem } from "../../components/tools/date_tools.js";
+import { formatDateSystem, getOperationalTimeInfo } from "../../components/tools/date_tools.js";
 import { Logging } from "../../components/tools/servertool.js";
 import { status } from "../../components/tools/general.js";
 import { getBranchScope } from "../../components/tools/branch_scope.js";
@@ -160,11 +160,11 @@ router.post("/", async (req, res) => {
       sessionMap.get(sessionKey).rows.push(jdw);
     }
 
-    // Cek apakah tanggal booking adalah hari ini
-    const todayYmd = formatDateSystem(new Date(), "yyyy-MM-dd") || new Date().toISOString().slice(0, 10);
+    // Cek apakah tanggal booking adalah hari ini berdasarkan zona waktu operasional klinik
+    const timeInfo = getOperationalTimeInfo(oPayload.tz);
+    const todayYmd = timeInfo.todayYmd;
     const isBookingToday = cleanDateStr === todayYmd;
-    const now = new Date();
-    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    const nowMinutes = timeInfo.nowMinutes;
 
     // 5. Bangun 1 slot per sesi dengan info utama Petugas Penanggung Jawab (PJ) dan kuota milik PJ
     const vaSlots = [];
@@ -463,11 +463,13 @@ router.post("/", async (req, res) => {
 
       const isPastToday = isBookingToday && endMin <= nowMinutes;
       const isOngoingNow = isBookingToday && nowMinutes >= startMin && nowMinutes < endMin;
+      const isNotStartedToday = isBookingToday && nowMinutes < startMin;
 
       return {
         ...doc,
         is_past_today: isPastToday,
         is_ongoing_now: isOngoingNow,
+        is_not_started_today: isNotStartedToday,
       };
     });
 

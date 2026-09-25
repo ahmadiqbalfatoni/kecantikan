@@ -10,7 +10,7 @@
 
 import express from "express";
 import DB from "../../../../core/config/knex.js";
-import { formatDateSystem } from "../../components/tools/date_tools.js";
+import { formatDateSystem, getOperationalTimeInfo } from "../../components/tools/date_tools.js";
 import { Logging, ChangesLog } from "../../components/tools/servertool.js";
 import { status } from "../../components/tools/general.js";
 import { getBranchScope } from "../../components/tools/branch_scope.js";
@@ -53,8 +53,8 @@ router.post("/", async (req, res) => {
 
     // 2. Eksekusi 1 Transaksi DB Atomic
     await DB.transaction(async (trx) => {
-      const now = new Date();
-      const todayYmd = formatDateSystem(now, "yyyy-MM-dd") || now.toISOString().slice(0, 10);
+      const timeInfo = getOperationalTimeInfo(oPayload.tz);
+      const todayYmd = timeInfo.todayYmd;
       const todayStr = todayYmd.replace(/-/g, "");
 
       const HARI_MAP = ["minggu", "senin", "selasa", "rabu", "kamis", "jumat", "sabtu"];
@@ -77,7 +77,7 @@ router.post("/", async (req, res) => {
         }
       }
       const cKodeKunjungan = `${prefixKunjungan}${String(nextKjSeq).padStart(3, "0")}`;
-      const jamDatang = now.toTimeString().slice(0, 8);
+      const jamDatang = timeInfo.timeStr;
 
       const branchCode = getBranchScope(req, oPayload.kode_cabang) || req?.auth?.kode_cabang || pasien.kode_cabang || "CBG-001";
 
@@ -545,7 +545,7 @@ router.post("/", async (req, res) => {
           }
 
           // Validasi apakah sesi jadwal yang dipilih atau sesi ruangan sedang aktif saat ini (Walk-In)
-          const nowMinutes = now.getHours() * 60 + now.getMinutes();
+          const nowMinutes = timeInfo.nowMinutes;
           const selectedJadwalKode = item.kode_jadwal || oPayload.kode_jadwal;
           let targetSchedule = null;
           if (selectedJadwalKode) {
@@ -640,7 +640,7 @@ router.post("/", async (req, res) => {
           }
 
           // Validasi ketersediaan dokter jaga di Ruang Konsultasi hari ini & saat ini
-          const nowMinutes = now.getHours() * 60 + now.getMinutes();
+          const nowMinutes = timeInfo.nowMinutes;
 
           const activeDoctorsInKonsul = await trx("mst_jadwal_karyawan as j")
             .leftJoin("mst_karyawan as k", "j.no_sip", "k.no_sip")

@@ -10,7 +10,7 @@
 
 import express from "express";
 import DB from "../../../../core/config/knex.js";
-import { formatDateSystem } from "../../components/tools/date_tools.js";
+import { formatDateSystem, getOperationalTimeInfo } from "../../components/tools/date_tools.js";
 import { Logging } from "../../components/tools/servertool.js";
 import { status } from "../../components/tools/general.js";
 import { getBranchScope } from "../../components/tools/branch_scope.js";
@@ -197,9 +197,9 @@ router.post("/", async (req, res) => {
       .first();
     const toleransiMenit = parseInt(cfgToleransi?.keterangan || "30", 10) || 30;
 
-    const now = new Date();
-    const todayYmd = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    const timeInfo = getOperationalTimeInfo(oPayload.tz);
+    const todayYmd = timeInfo.todayYmd;
+    const nowMinutes = timeInfo.nowMinutes;
 
     const mappedData = rows.map((row) => {
       const items = detailMap[row.kode_booking] || [];
